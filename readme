@@ -1,0 +1,95 @@
+Čtečka XML 1.0
+Čitelné XML bez programování
+
+STRUČNÝ POPIS
+
+Čtečka XML zobrazí obsah XML souboru a umožní upravit jeho vzhled pomocí
+jednoduchých ovládacích prvků. Hodí se například pro nabídky zboží od
+dodavatelů, ceníky, přehledy článků nebo mapy webu (sitemap). Výsledek lze
+uložit jako samostatnou HTML stránku nebo jako CSS pro další XML soubory
+se stejnou strukturou. Program běží místně v prohlížeči, bez instalace.
+
+CO PROGRAM UMÍ
+
+Po načtení XML vytvoří seznam tagů podle jejich umístění v dokumentu.
+Stejně pojmenovaný tag v různých částech souboru tak může mít odlišný
+vzhled. U známých názvů přidává český význam, například <name> (Název).
+Neznámé tagy zobrazuje pod jejich původním názvem.
+
+U položek lze nastavit viditelnost, barvu textu, písmo, velikost, tučné
+písmo, kurzivu, podtržení, zarovnání, mezeru pod položkou a zvýraznění
+pozadí. Lze zvolit samostatný blok nebo zobrazení v řádku. U vhodně
+strukturovaných dat lze měnit pořadí tagů uvnitř stejného obalu.
+
+Nastavení stránky zahrnuje světlý a tmavý základ, vlastní barvu pozadí
+a textu, základní velikost písma, šířku obsahu a řádkování. Změny se hned
+promítají do náhledu. K dispozici je vrácení posledních úprav a obnovení
+výchozího vzhledu.
+
+JAK S ČTEČKOU PRACOVAT
+
+1. Rozbalte ZIP a otevřete index.html v prohlížeči. Pro vyzkoušení bez
+   vlastního souboru slouží tlačítko Vyzkoušet na zboží.
+
+2. Klikněte na Načíst XML a vyberte soubor, případně ho přetáhněte do okna.
+   Původní XML se nepřepisuje. Obsah se zpracovává ve vašem zařízení.
+
+3. Vlevo nejprve nastavte vzhled stránky. Potom vyberte tag v seznamu
+   nebo klikněte na jeho obsah v náhledu. Prostřední panel nabízí jeho
+   nastavení. V seznamu lze vyhledávat.
+
+4. Přepínač Tagy v náhledu zobrazuje nad hodnotami jejich označení,
+   například <price>. Štítky jsou menší, tučné a oddělené od textu.
+   Do exportu se nepřidávají. Obalové tagy lze zobrazit samostatným
+   přepínačem; skrytím obalu se skryje i jeho obsah.
+
+5. Výsledek uložte jako HTML nebo CSS. Před zavřením či obnovením stránky
+   si vzhled stáhněte jako CSS, pokud se k němu chcete vrátit.
+   Nastavení se mezi spuštěními automaticky neukládá.
+
+DVA ZPŮSOBY EXPORTU
+
+HTML je vhodné pro jednorázové čtení nebo předání výsledku. Jeden soubor
+obsahuje celý dokument i vzhled a lze ho otevřít v prohlížeči.
+Webové adresy jsou v exportovaném HTML klikací.
+
+CSS je vhodné pro opakované XML se stejnou strukturou. Export je odsazený,
+má vlastnosti na samostatných řádcích a české komentáře. Lze ho upravovat
+také ručně v textovém editoru.
+
+Uložte vzhled.css vedle XML. Za úvodní deklaraci XML a před kořenový tag
+vložte tento řádek:
+
+<?xml-stylesheet type="text/css" href="vzhled.css"?>
+
+XML pak otevřete v prohlížeči. Při jiném názvu CSS upravte hodnotu href.
+Oba soubory musí zůstat ve správném vzájemném umístění.
+
+Tlačítko Načíst vzhled obnoví nastavení z CSS vytvořeného čtečkou.
+Obnovuje uložená data ovládacích prvků: pozdější ruční změny pravidel CSS
+do nich nepřenáší. Při přímém zobrazení XML se ruční úpravy CSS použijí.
+
+POŽADAVKY A ROZSAH VERZE 1.0
+
+Čtečka byla ověřena v Google Chrome a Microsoft Edge ve Windows.
+Ke spuštění nepotřebuje server, registraci ani internetové připojení.
+Nahrané soubory nikam neodesílá. Otevření externího odkazu v exportovaném
+HTML používá běžné připojení prohlížeče.
+
+Limit vstupu je 30 MB. Rozpoznané opakující se záznamy se v náhledu
+stránkují po deseti; export zahrnuje celý dokument. Automatické rozpoznání
+záznamů nemusí odpovídat každé struktuře XML.
+
+Verze 1.0 upravuje vzhled elementů. Atributy vypisuje jako doplňující
+údaje v náhledu a HTML; samostatně je nestyluje a přímý XML/CSS export
+je nevypisuje. HTML uvnitř textu či CDATA zobrazuje jako text.
+Datum a čísla zachovává v původním zápisu. Obsah XML samotného needituje.
+
+AUTOR
+Čtečku vyrobil Kráťa za pomoci ChatGPT.
+https://lkrata.github.io/kratofon/
+
+DOBROVOLNÁ PODPORA
+Šálek v záhlaví otevře okno s číslem účtu a QR platbou na podporu
+XML čtečky. Používání programu není podmíněno příspěvkem.
+Složku images ponechte vedle index.html; obsahuje šálek a platební QR.
