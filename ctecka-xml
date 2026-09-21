@@ -1,0 +1,1155 @@
+<!doctype html>
+<html lang="cs">
+    <!-- Čtečku vyrobil Kráťa (https://lkrata.github.io/kratofon/) za pomoci ChatGPT. -->
+    <meta charset="utf-8">
+    <meta name="author" content="Kráťa — za pomoci ChatGPT">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Čtečka XML 1.0
+    </title>
+    <style>:root {
+	font-family: Segoe UI, Arial, sans-serif;
+	color: #182c35;
+	background: #f3f5f4;
+	font-size: 15px
+}
+
+* {
+	box-sizing: border-box
+}
+
+body {
+	margin: 0
+}
+
+button, input, select {
+	font: inherit
+}
+
+button, .file-button {
+	min-height: 42px;
+	border: 1px solid #cdd9d6;
+	background: white;
+	border-radius: 9px;
+	padding: 9px 13px;
+	cursor: pointer;
+	color: #243c43
+}
+
+button:hover, .file-button:hover {
+	background: #edf5f1;
+	border-color: #6ca591
+}
+
+button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible {
+	outline: 3px solid #e69d30;
+	outline-offset: 2px
+}
+
+button:disabled {
+	opacity: .45;
+	cursor: default
+}
+
+.primary {
+	background: #166d59;
+	color: white;
+	border-color: #166d59
+}
+
+.primary:hover {
+	background: #115442;
+	color: white
+}
+
+header {
+	padding: 20px 28px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 20px;
+	background: white;
+	border-bottom: 1px solid #dce4df
+}
+
+h1 {
+	font-size: 24px;
+	letter-spacing: -.7px;
+	margin: 0
+}
+
+h1 span {
+	color: #16866b
+}
+
+header p {
+	margin: 5px 0 0;
+	color: #65767b;
+	font-size: 13px
+}
+
+.actions {
+	display: flex;
+	gap: 8px;
+	flex-wrap: wrap
+}
+
+.badge {
+	font-size: 11px;
+	letter-spacing: 1.3px;
+	text-transform: uppercase;
+	color: #617a72
+}
+
+.toolbar {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 12px 28px;
+	border-bottom: 1px solid #dce4df;
+	flex-wrap: wrap
+}
+
+.toolbar .status {
+	flex: 1;
+	color: #52676d;
+	font-size: 13px
+}
+
+main {
+	display: grid;
+	grid-template-columns: 325px 290px minmax(300px,1fr);
+	height: calc(100vh - 157px);
+	min-height: 580px
+}
+
+.panel {
+	border-right: 1px solid #dce4df;
+	background: #fff;
+	overflow: auto;
+	padding: 21px 18px
+}
+
+.panel h2 {
+	font-size: 16px;
+	margin: 0 0 6px
+}
+
+.muted {
+	color: #6e7e82;
+	font-size: 13px;
+	line-height: 1.5
+}
+
+.search {
+	width: 100%;
+	padding: 11px;
+	border: 1px solid #ccd8d2;
+	border-radius: 8px;
+	margin: 14px 0 10px
+}
+
+.field {
+	display: flex;
+	width: 100%;
+	align-items: center;
+	gap: 10px;
+	text-align: left;
+	border: 1px solid transparent;
+	border-radius: 8px;
+	margin: 3px 0;
+	padding: 11px 10px
+}
+
+.field.active {
+	background: #e7f2ed;
+	border-color: #acd0bd
+}
+
+.field .dot {
+	width: 9px;
+	height: 9px;
+	border-radius: 50%;
+	background: #27856b;
+	flex: none
+}
+
+.field.off .dot {
+	background: #bec9c5
+}
+
+.field.off {
+	color: #7e8b88
+}
+
+.field strong {
+	display: block;
+	font-size: 14px;
+	font-weight: 600
+}
+
+.field small {
+	display: block;
+	font-size: 11px;
+	color: #6e7e82;
+	overflow-wrap: anywhere;
+	margin-top: 3px
+}
+
+.field .count {
+	margin-left: auto;
+	font-size: 11px;
+	color: #85918d
+}
+
+.section {
+	margin-top: 23px;
+	padding-top: 20px;
+	border-top: 1px solid #e6ebe8
+}
+
+label.control {
+	display: block;
+	margin: 16px 0 6px;
+	font-size: 13px;
+	font-weight: 600
+}
+
+input[type=number], select {
+	width: 100%;
+	padding: 10px;
+	border: 1px solid #ccd8d2;
+	border-radius: 8px;
+	background: white
+}
+
+input[type=color] {
+	width: 49px;
+	height: 42px;
+	padding: 4px;
+	border: 1px solid #ccd8d2;
+	border-radius: 8px;
+	background: white
+}
+
+.row {
+	display: flex;
+	gap: 8px;
+	align-items: center
+}
+
+.row>* {
+	flex: 1
+}
+
+.row input[type=color] {
+	flex: 0 0 49px
+}
+
+.toggle {
+	display: flex;
+	align-items: center;
+	gap: 9px;
+	min-height: 42px;
+	font-size: 14px
+}
+
+.toggle input {
+	width: 19px;
+	height: 19px;
+	accent-color: #166d59
+}
+
+.formats {
+	display: flex;
+	gap: 7px
+}
+
+.formats button {
+	flex: 1;
+	font-size: 18px
+}
+
+.formats button[aria-pressed=true] {
+	background: #166d59;
+	color: white
+}
+
+.preview-area {
+	padding: 22px;
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	overflow: hidden
+}
+
+.preview-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	margin-bottom: 15px
+}
+
+.preview-head h2 {
+	font-size: 16px;
+	margin: 0
+}
+
+.preview-head p {
+	margin: 4px 0 0
+}
+
+.preview-shell {
+	flex: 1;
+	min-height: 200px;
+	background: #fff;
+	border: 1px solid #d5e0d9;
+	border-radius: 12px;
+	overflow: hidden;
+	box-shadow: 0 8px 30px #1b3f3210
+}
+
+iframe {
+	border: 0;
+	width: 100%;
+	height: 100%;
+	background: white
+}
+
+.empty {
+	display: flex;
+	min-height: 100%;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+	padding: 30px
+}
+
+.empty .icon {
+	font-size: 40px;
+	color: #16866b;
+	margin-bottom: 15px
+}
+
+.empty h2 {
+	font-size: 25px;
+	margin: 0 0 8px
+}
+
+.empty p {
+	max-width: 420px;
+	line-height: 1.6;
+	color: #6e7e82
+}
+
+.empty .actions {
+	justify-content: center;
+	margin-top: 15px
+}
+
+details summary {
+	cursor: pointer;
+	min-height: 40px;
+	padding: 10px 0;
+	font-size: 13px;
+	font-weight: 600
+}
+
+.pager {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 12px;
+	margin-top: 13px;
+	font-size: 13px
+}
+
+.pager button {
+	min-height: 35px;
+	padding: 5px 12px
+}
+
+#message {
+	padding: 11px 28px;
+	background: #fff0cb;
+	border-bottom: 1px solid #e9d69d;
+	font-size: 14px;
+	line-height: 1.5
+}
+
+#message[hidden] {
+	display: none
+}
+
+.hint {
+	background: #eef5f1;
+	padding: 11px;
+	border-radius: 8px;
+	font-size: 12px;
+	line-height: 1.6;
+	color: #4c6860
+}
+
+.editor-title {
+	overflow-wrap: anywhere
+}
+
+#dropOverlay {
+	position: fixed;
+	inset: 0;
+	z-index: 10;
+	display: grid;
+	place-items: center;
+	background: #e3f3ebee;
+	border: 5px dashed #16866b;
+	font-size: 30px;
+	pointer-events: none
+}
+
+#dropOverlay[hidden] {
+	display: none
+}
+
+dialog {
+	border: 0;
+	border-radius: 14px;
+	padding: 25px;
+	max-width: 580px;
+	width: 90%;
+	box-shadow: 0 20px 80px #0004
+}
+
+dialog::backdrop {
+	background: #15332b77
+}
+
+dialog p {
+	line-height: 1.6
+}
+
+dialog code {
+	display: block;
+	background: #edf2ef;
+	padding: 15px;
+	white-space: pre-wrap;
+	overflow-wrap: anywhere
+}
+
+footer {
+	font-size: 12px;
+	color: #6e7e82;
+	margin-top: 15px
+}
+
+@media(max-width:1100px) {
+main {
+	grid-template-columns: 255px 250px minmax(280px,1fr)
+}
+
+header {
+	padding: 16px
+}
+
+.toolbar {
+	padding: 10px 16px
+}
+
+.panel {
+	padding: 16px 12px
+}
+
+.preview-area {
+	padding: 15px
+}
+
+}
+
+@media(max-width:800px) {
+header {
+	align-items: flex-start;
+	flex-direction: column
+}
+
+main {
+	height: auto;
+	grid-template-columns: 1fr 1fr;
+	min-height: 0
+}
+
+.panel {
+	max-height: 600px
+}
+
+.preview-area {
+	grid-column: 1/-1;
+	height: 650px
+}
+
+.toolbar {
+	gap: 8px
+}
+
+.actions button {
+	font-size: 13px
+}
+
+}
+
+.field>span:nth-child(2) {
+	min-width: 0;
+	flex: 1
+}
+
+.field strong {
+	overflow-wrap: anywhere
+}
+
+.app-credit {
+	margin: 0;
+	padding: 12px 24px;
+	text-align: center;
+	background: #fff;
+	border-top: 1px solid #dce4df;
+	color: #52676d
+}
+
+.app-credit a {
+	color: #166d59;
+	font-weight: 600;
+	text-underline-offset: 3px
+}
+
+.header-credit a {
+	color: #166d59;
+	font-weight: 600;
+	text-underline-offset: 3px
+}
+
+.header-credit a:hover {
+	color: #0c493b
+}
+
+#coffee {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 44px;
+	padding: 7px;
+	background: #f1f3f2
+}
+
+#coffee:hover {
+	background: #dce9e2
+}
+
+#coffee img {
+	display: block;
+	object-fit: contain
+}
+
+#coffeeDialog {
+	width: min(420px,calc(100vw - 30px));
+	max-height: calc(100vh - 30px);
+	overflow: auto;
+	background: #fff;
+	color: #000;
+	border: 1px solid #cdd9d6;
+	border-radius: 8px;
+	padding: 22px;
+	text-align: center
+}
+
+#coffeeDialog::backdrop {
+	background: rgba(0,0,0,.72)
+}
+
+#coffeeDialog h2 {
+	margin-top: 0;
+	color: #166d59;
+	font-size: 22px
+}
+
+#coffeeDialog p {
+	line-height: 1.45
+}
+
+#coffeeDialog .payment-qr {
+	display: block;
+	width: 240px;
+	max-width: 100%;
+	height: auto;
+	margin: 16px auto
+}
+
+#coffeeDialog button {
+	margin-top: 5px;
+	background: #166d59;
+	border-color: #166d59;
+	color: #fff
+}
+
+#coffeeDialog button:hover {
+	background: #115442
+}
+
+.brand-row {
+	display: flex;
+	align-items: center;
+	gap: 24px;
+	margin: 4px 0
+}
+
+.brand-row h1 {
+	line-height: 0
+}
+
+.brand-logo {
+	display: block;
+	width: 100px;
+	height: auto
+}
+
+.brand-row #coffee {
+	border-color: #8fba9f
+}
+
+.brand h1 {
+	line-height: 0;
+	margin: 0
+}
+
+.brand .brand-logo {
+	width: 130px;
+	height: auto
+}
+
+.header-credit {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	column-gap: 36px;
+	row-gap: 12px;
+	margin-top: 16px;
+	color: #65767b;
+	font-size: 15px
+}
+
+.author-group {
+	display: flex;
+	align-items: center;
+	gap: 14px
+}
+
+.author-avatar {
+	display: block;
+	width: 44px;
+	height: 44px;
+	object-fit: contain
+}
+
+.assistant-credit {
+	white-space: nowrap
+}
+
+.author-group #coffee {
+	border-color: #8fba9f;
+	width: 46px;
+	height: 46px;
+	padding: 7px
+}
+
+header>.actions {
+	flex-shrink: 0
+}
+
+@media(max-width:1000px) {
+header {
+	flex-wrap: wrap;
+	gap: 16px
+}
+
+.header-credit {
+	column-gap: 22px
+}
+
+}
+
+header {
+	display: grid;
+	grid-template-columns: auto minmax(0,1fr) auto;
+	align-items: end;
+	gap: 20px;
+	padding: 16px 24px
+}
+
+.brand .brand-logo {
+	width: 145px
+}
+
+.header-credit {
+	margin: 0;
+	align-self: center;
+	justify-content: center;
+	column-gap: 20px;
+	row-gap: 8px
+}
+
+header>.actions {
+	align-self: end;
+	justify-content: flex-end;
+	flex-wrap: nowrap
+}
+
+header>.actions button {
+	white-space: nowrap
+}
+
+@media(max-width:1150px) {
+header {
+	gap: 14px;
+	padding: 14px 16px
+}
+
+.brand .brand-logo {
+	width: 130px
+}
+
+.header-credit {
+	font-size: 14px;
+	column-gap: 14px
+}
+
+.author-group {
+	gap: 10px
+}
+
+header>.actions {
+	gap: 6px
+}
+
+header>.actions button {
+	font-size: 14px;
+	padding: 9px 10px
+}
+
+}
+
+@media(max-width:950px) {
+header {
+	gap: 12px
+}
+
+.brand .brand-logo {
+	width: 115px
+}
+
+.header-credit {
+	flex-direction: column;
+	align-items: center;
+	gap: 6px
+}
+
+.author-avatar {
+	width: 36px;
+	height: 36px
+}
+
+.author-group #coffee {
+	width: 40px;
+	height: 40px;
+	min-height: 40px;
+	min-width: 40px;
+	padding: 5px
+}
+
+}
+
+@media(max-width:720px) {
+header {
+	grid-template-columns: auto minmax(0,1fr);
+	gap: 12px 16px
+}
+
+.header-credit {
+	align-items: flex-end;
+	justify-content: center
+}
+
+header>.actions {
+	grid-column: 1/-1;
+	justify-content: flex-start;
+	flex-wrap: wrap
+}
+
+}
+
+@media(max-width:400px) {
+header {
+	padding: 12px;
+	gap: 10px
+}
+
+.brand .brand-logo {
+	width: 95px
+}
+
+.header-credit {
+	font-size: 12px
+}
+
+.author-group {
+	gap: 7px
+}
+
+.author-avatar {
+	width: 30px;
+	height: 30px
+}
+
+}
+
+[hidden] {
+	display: none!important
+}
+
+     </style>
+    <header>
+        <div class="brand"><h1>
+                <img class="brand-logo" src="images/xml.ctecka-logo.png" alt="XML čtečka"></h1>
+        </div>
+        <div class="header-credit">
+            <div class="author-group">
+                <span>Vyrobil 
+                    <a href="https://lkrata.github.io/kratofon/" target="_blank" rel="noopener noreferrer">Kráťa</a>
+                </span>
+                <img class="author-avatar" src="images/avatar-krata.png" alt="Avatar Kráti" width="44" height="44">
+                <button id="coffee" title="Podpořte vývoj XML čtečky" aria-label="Podpořte vývoj XML čtečky" aria-haspopup="dialog">
+                    <img src="images/salek-cerny.png" alt="" width="28" height="28">
+                </button>
+            </div>
+           </div>
+        <div class="actions">
+            <button id="openXml" class="primary">＋ Načíst XML
+            </button>
+            <button id="openSettings">Načíst vzhled
+            </button>
+            <button id="help">Jak to funguje
+            </button>
+        </div>
+    </header>
+    <div class="toolbar">
+        <span id="status" class="status" aria-live="polite">Soubory zůstávají v tomto prohlížeči.
+        </span>
+        <button id="undo" disabled title="Vrátit poslední úpravu vzhledu">↶ Zpět
+        </button>
+        <button id="reset" disabled>Výchozí vzhled
+        </button>
+        <button id="saveCss" disabled>Stáhnout CSS
+        </button>
+        <button id="saveHtml" class="primary" disabled>Stáhnout HTML
+        </button>
+    </div>
+    <div id="message" role="status" hidden>
+    </div>
+    <main>
+        <aside class="panel">
+            <div><h2>Nastavení stránky</h2>
+                <label class="control" for="theme">Barevný základ
+                </label>
+                <select id="theme">
+                    <option value="light">Světlý · čistý papír
+                    </option>
+                    <option value="dark">Tmavý · podle ukázky
+                    </option>
+                </select>
+                <label class="control" for="pageBg">Pozadí stránky
+                </label>
+                <div class="row">
+                    <input id="pageBg" type="color" value="#ffffff">
+                    <span class="muted">Barva pozadí náhledu
+                    </span>
+                </div>
+                <label class="control" for="pageColor">Základní barva textu
+                </label>
+                <input id="pageColor" type="color" value="#253b43">
+                <label class="control" for="pageSize">Základní velikost (px)
+                </label>
+                <input id="pageSize" type="number" min="10" max="72" value="17">
+                <label class="control" for="pageWidth">Šířka obsahu (px)
+                </label>
+                <input id="pageWidth" type="number" min="280" max="2000" value="1000">
+                <label class="control" for="lineHeight">Řádkování
+                </label>
+                <input id="lineHeight" type="number" min="1" max="3" step="0.1" value="1.6">
+            </div>
+            <div class="section"><h2>1. Položky v XML</h2>
+                <div class="muted">Vyberte, co chcete upravit.
+                </div>
+                <input id="search" class="search" type="search" placeholder="Hledat položku nebo tag…" aria-label="Hledat položku">
+                <label class="toggle">
+                    <input id="showContainers" type="checkbox"> Zobrazit i obalové tagy
+                </label>
+                <div id="fields">
+                    <p class="muted">Seznam se vytvoří automaticky po načtení XML.
+                    </p>
+                </div>
+            </div>
+        </aside>
+        <section class="panel"><h2>2. Nastavení položky</h2>
+            <div id="editorEmpty" class="muted">Nejdřív načtěte soubor a vyberte položku vlevo.
+            </div>
+            <div id="editor" hidden>
+                <div class="section" style="margin-top:15px;padding-top:15px">
+                    <strong id="fieldTitle" class="editor-title"></strong>
+                    <p id="fieldPath" class="muted editor-title">
+                    </p>
+                    <label class="toggle">
+                        <input id="visible" type="checkbox"> Zobrazovat tuto položku
+                    </label>
+                </div>
+                <label class="control" for="font">Písmo
+                </label>
+                <select id="font">
+                    <option value="inherit">Podle stránky
+                    </option>
+                    <option value="Verdana">Verdana
+                    </option>
+                    <option value="Arial">Arial
+                    </option>
+                    <option value="Georgia">Georgia
+                    </option>
+                    <option value="Tahoma">Tahoma
+                    </option>
+                    <option value="monospace">Neproporcionální
+                    </option>
+                </select>
+                <label class="control" for="size">Velikost písma (px)
+                </label>
+                <input id="size" type="number" min="0" max="100" placeholder="0 = podle stránky">
+                <div class="muted">Nula přebírá velikost nadřazené položky.
+                </div>
+                <label class="control" for="color">Barva textu
+                </label>
+                <div class="row">
+                    <input id="color" type="color">
+                    <button id="inheritColor">Převzít barvu
+                    </button>
+                </div>
+                <label class="control">Řez písma
+                </label>
+                <div class="formats">
+                    <button id="bold" aria-label="Tučné" aria-pressed="false"><b>B</b>
+                    </button>
+                    <button id="italic" aria-label="Kurziva" aria-pressed="false"><i>I</i>
+                    </button>
+                    <button id="underline" aria-label="Podtržení" aria-pressed="false"><u>U</u>
+                    </button>
+                </div>
+                <label class="control" for="display">Umístění
+                </label>
+                <select id="display">
+                    <option value="block">Samostatný blok
+                    </option>
+                    <option value="inline">V řádku s okolním textem
+                    </option>
+                </select>
+                <label class="control" for="align">Zarovnání
+                </label>
+                <select id="align">
+                    <option value="inherit">Podle stránky
+                    </option>
+                    <option value="left">Vlevo
+                    </option>
+                    <option value="center">Na střed
+                    </option>
+                    <option value="right">Vpravo
+                    </option>
+                </select>
+                <label class="control" for="gap">Mezera pod položkou (px)
+                </label>
+                <input id="gap" type="number" min="0" max="150">
+                <details>
+                    <summary>Pořadí a zvýraznění
+                    </summary>
+                    <label class="control" for="order">Pořadí mezi sousedními tagy
+                    </label>
+                    <input id="order" type="number" min="-100" max="100">
+                    <p class="muted">Nižší číslo je dříve. Platí uvnitř stejného obalového tagu, který nemá vlastní text.
+                    </p>
+                    <label class="toggle">
+                        <input id="highlight" type="checkbox"> Barevné pozadí
+                    </label>
+                    <input id="highlightColor" type="color" value="#ceffce" aria-label="Barva zvýraznění">
+                </details>
+                <p class="hint">Úprava platí pro všechny výskyty stejné cesty v XML. Skrytím obalu skryjete i jeho obsah.
+                </p>
+            </div>
+        </section>
+        <section class="preview-area">
+            <div class="preview-head">
+                <div><h2>3. Živý náhled</h2>
+                    <p class="muted" id="previewHint">Kliknutím na text vyberete jeho nastavení.
+                    </p>
+                </div>
+                <label class="toggle">
+                    <input id="previewTags" type="checkbox" checked> Tagy v náhledu
+                </label>
+            </div>
+            <div class="preview-shell" id="previewShell">
+                <div class="empty" id="empty">
+                    <div class="icon">&lt; / &gt;
+                    </div><h2>Dejte datům čitelnou podobu.</h2>
+                    <p>Načtěte XML nebo ho přetáhněte do okna. Položky, barvy i písmo nastavíte několika kliknutími.
+                    </p>
+                    <div class="actions">
+                        <button class="primary" id="emptyOpen">Vybrat XML soubor
+                        </button>
+                        <button id="demo">Vyzkoušet na zboží
+                        </button>
+                    </div>
+                    <footer>Verze 1.0 · Bez instalace, registrace a odesílání souborů.
+                    </footer>
+                </div>
+                <iframe id="preview" title="Náhled vašeho XML" sandbox="allow-same-origin" hidden>
+                </iframe>
+            </div>
+            <div class="pager" id="pager" hidden>
+                <button id="prev" aria-label="Předchozí stránka">←
+                </button>
+                <span id="pageInfo">
+                </span>
+                <button id="next" aria-label="Další stránka">→
+                </button>
+            </div>
+        </section>
+    </main>
+    <footer class="app-credit">Čtečku vyrobil 
+        <a href="https://lkrata.github.io/kratofon/" target="_blank" rel="noopener noreferrer">Kráťa</a> za pomoci ChatGPT. · Verze 1.0
+    </footer>
+    <input type="file" id="xmlFile" accept=".xml,text/xml,application/xml" hidden>
+    <input type="file" id="settingsFile" accept=".css" hidden>
+    <div id="dropOverlay" hidden>Pusťte XML sem
+    </div>
+    <dialog id="helpDialog"><h2>Od XML ke čtení</h2>
+        <p>1. Načtěte XML. 2. Vyberte položku vlevo nebo kliknutím v náhledu. 3. Nastavte vzhled a stáhněte výsledek.
+        </p>
+        <p><b>CSS pro opakované použití:</b> soubor <b>vzhled.css</b> uložte vedle XML. Do XML vložte následující řádek za úvodní deklaraci <b>&lt;?xml … ?&gt;</b>, před kořenový tag:
+        </p>
+        <code>&lt;?xml-stylesheet type="text/css" href="vzhled.css"?&gt;
+        </code>
+        <p><b>HTML pro jednorázové čtení:</b> obsahuje všechna data i vzhled v jednom souboru. Otevřete ho v prohlížeči.
+        </p>
+        <p>Tlačítko <b>Načíst vzhled</b> obnoví nastavení z CSS vytvořeného touto čtečkou. Náhled zobrazuje po 10 záznamech, export obsahuje celý dokument. CSS zachovává strukturu XML; odkazy jsou klikací v HTML.
+        </p>
+        <p>První verze upravuje elementy XML. Atributy se vypisují v náhledu a HTML jako doplňující údaje; samostatné nastavení atributů a jejich zobrazení v přímém XML/CSS zatím není součástí této verze. Text uvnitř CDATA se zobrazuje bezpečně jako text.
+        </p>
+        <button id="closeHelp" class="primary">Rozumím
+        </button>
+    </dialog>
+    <dialog id="coffeeDialog" aria-labelledby="coffeeTitle">
+        <h2 id="coffeeTitle">XML čtečka je zdarma</h2>
+        <p>Nicméně budu vděčný za jakoukoli podporu (třeba jen na kafe). Bude mě to motivovat do dalšího vývoje. Díky Kráťa
+        </p>
+        <p>Číslo účtu je <strong>1953595183/0800</strong> nebo QR platba
+        </p>
+        <img class="payment-qr" src="images/qr-platba.png" alt="QR platba na podporu XML čtečky">
+        <button id="closeCoffee" autofocus>Zavřít
+        </button>
+    </dialog>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const labels={title:'Titulek',name:'Název',source:'Zdroj',publicdate:'Datum vydání',url:'Odkaz',author:'Autor',content:'Obsah',description:'Popis',DESCRIPTION:'Popis',PRODUCTNAME:'Název produktu',PRODUCT:'Produkt',PRICE_VAT:'Cena s DPH',PRICE:'Cena',price:'Cena',EAN:'EAN',IMGURL:'Obrázek (odkaz)',CATEGORYTEXT:'Kategorie',DELIVERY_DATE:'Dodání',stock:'Skladem',item:'Záznam',SHOPITEM:'Produkt',annotation:'Anotace',body:'Text',p:'Odstavec',l:'Řádek',nitoid:'Identifikátor'};
+let xml=null,fields=[],fieldMap=new Map(),nodeKeys=new WeakMap(),selected=null,settings=null,history=[],fileName='dokument.xml',recordNodes=[],recordParent=null,page=0,initial=null,renderTimer=0;
+const PAGE_SIZE=10;
+$('coffee').onclick=()=>$('coffeeDialog').showModal();
+$('closeCoffee').onclick=()=>$('coffeeDialog').close();
+$('coffeeDialog').addEventListener('click',e=>{if(e.target!==$('coffeeDialog'))return;const r=e.target.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)e.target.close();});
+const basePage=()=>({bg:'#ffffff',color:'#253b43',size:17,width:1000,lineHeight:1.6,font:'Verdana',theme:'light'});
+const escapeHtml=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function tell(text){$('message').textContent=text;$('message').hidden=!text;}
+function snapshot(){if(!settings)return;history.push(JSON.stringify(settings));if(history.length>60)history.shift();$('undo').disabled=false;}
+function shortName(f){return labels[f.name]||f.name;}
+function fieldCaption(f){return '<'+f.name+'>'+(labels[f.name]?' ('+labels[f.name]+')':'');}
+function defaultStyle(f){const title=/^(title|productname|name|nazev)$/i.test(f.name)&&!f.path.some(x=>/source/i.test(x.n));return {visible:true,color:title?'#146b56':null,font:'inherit',size:title?24:0,bold:title,italic:false,underline:false,display:/^(l|span|b|i|em|strong)$/i.test(f.name)?'inline':'block',align:'inherit',gap:title?12:(f.container?0:8),order:0,highlight:false,highlightColor:'#ceffce'};}
+function buildFields(){fields=[];fieldMap=new Map();nodeKeys=new WeakMap();function walk(el,path){const p=[...path,{n:el.localName,u:el.namespaceURI||''}];const key=JSON.stringify(p);nodeKeys.set(el,key);let f=fieldMap.get(key);if(!f){f={key,id:'f'+fields.length,name:el.localName,path:p,count:0,container:el.children.length>0,hasText:false,mixed:false};fields.push(f);fieldMap.set(key,f);}f.count++;const ownText=[...el.childNodes].some(n=>(n.nodeType===3||n.nodeType===4)&&n.textContent.trim());f.hasText ||= ownText;f.mixed ||= ownText&&el.children.length>0;for(const child of el.children)walk(child,p);}walk(xml.documentElement,[]);}
+function detectRecords(){recordNodes=[];recordParent=null;let candidates=[];function scan(el,depth){if(depth>3)return;const groups=new Map();for(const c of el.children){const k=(c.namespaceURI||'')+'|'+c.localName;if(!groups.has(k))groups.set(k,[]);groups.get(k).push(c);}for(const g of groups.values()){if(g.length>1&&g[0].children.length>1)candidates.push({nodes:g,parent:el,score:g.length/(depth+1)});}for(const c of [...el.children].slice(0,8))scan(c,depth+1);}scan(xml.documentElement,0);candidates.sort((a,b)=>b.score-a.score);if(candidates.length){recordNodes=candidates[0].nodes;recordParent=candidates[0].parent;}}
+function loadXml(text,name){if(text.length>30000000)throw Error('Soubor je větší než 30 MB. Pro první verzi prosím použijte menší soubor.');const parsed=new DOMParser().parseFromString(text,'application/xml');if(parsed.getElementsByTagName('parsererror').length||parsed.documentElement.localName==='parsererror')throw Error('XML se nepodařilo načíst. Zkontrolujte, že je soubor úplný a správně zapsaný.');const previous=settings;xml=parsed;fileName=name;buildFields();detectRecords();settings={version:1,page:basePage(),fields:{}};for(const f of fields)settings.fields[f.key]=defaultStyle(f);if(previous){settings.page={...previous.page};for(const f of fields)if(previous.fields[f.key])settings.fields[f.key]={...previous.fields[f.key]};else if(settings.page.theme==='dark'&&settings.fields[f.key].color==='#146b56')settings.fields[f.key].color='#ffcc00';}initial=JSON.stringify({version:1,page:basePage(),fields:Object.fromEntries(fields.map(f=>[f.key,defaultStyle(f)]))});history=[];page=0;selected=fields.find(f=>!f.container)?.key||fields[0].key;$('undo').disabled=true;for(const id of ['reset','saveCss','saveHtml'])$(id).disabled=false;$('empty').hidden=true;$('preview').hidden=false;const attrCount=xml.querySelectorAll('*').length?[...xml.querySelectorAll('*')].reduce((n,e)=>n+[...e.attributes].filter(a=>a.namespaceURI!=='http://www.w3.org/2000/xmlns/').length,0):0;$('status').textContent=name+' · '+fields.length+' cest tagů'+(recordNodes.length?' · '+recordNodes.length+' záznamů':'');tell(attrCount?'Soubor obsahuje také atributy. Náhled a HTML je vypisují; samotný export CSS zatím upravuje pouze tagy.':'');syncPage();renderFields();syncEditor();renderPreview();}
+async function readFile(file){if(!file)return;try{if(file.size>30000000)throw Error('Limit první verze je 30 MB.');const bytes=await file.arrayBuffer();const head=new TextDecoder().decode(bytes.slice(0,180));const encoding=head.match(/encoding\s*=\s*["']([^"']+)/i)?.[1]||((new Uint8Array(bytes)[0]===255)?'utf-16le':(new Uint8Array(bytes)[0]===254)?'utf-16be':'utf-8');loadXml(new TextDecoder(encoding).decode(bytes),file.name);}catch(e){tell(e.message);}}
+function renderFields(){const q=$('search').value.toLocaleLowerCase('cs');$('fields').replaceChildren();for(const f of fields){if(!q&&!$('showContainers').checked&&f.container)continue;if(q&&!(shortName(f)+' '+f.path.map(x=>x.n).join(' / ')).toLocaleLowerCase('cs').includes(q))continue;const b=document.createElement('button');b.className='field'+(selected===f.key?' active':'')+(!settings.fields[f.key].visible?' off':'');b.dataset.key=f.key;b.innerHTML='<span class="dot"></span><span><strong>'+escapeHtml(fieldCaption(f))+'</strong><small>'+escapeHtml(f.path.map(x=>x.n).join(' › '))+'</small></span><span class="count">'+f.count+'</span>';b.onclick=()=>selectField(f.key);$('fields').append(b);}}
+function selectField(key){selected=key;const f=fieldMap.get(key);if(f.container)$('showContainers').checked=true;renderFields();syncEditor();highlightSelection();}
+function syncEditor(){if(!selected)return;$('editor').hidden=false;$('editorEmpty').hidden=true;const f=fieldMap.get(selected),s=settings.fields[selected];$('fieldTitle').textContent=fieldCaption(f);$('fieldPath').textContent=f.path.map(x=>x.n).join(' › ');for(const id of ['font','size','display','align','gap','order','highlightColor'])$(id).value=s[id];$('color').value=s.color||settings.page.color;for(const id of ['visible','highlight'])$(id).checked=s[id];for(const id of ['bold','italic','underline'])$(id).setAttribute('aria-pressed',String(s[id]));}
+function syncPage(){for(const [id,key] of Object.entries({pageBg:'bg',pageColor:'color',pageSize:'size',pageWidth:'width',lineHeight:'lineHeight',theme:'theme'}))$(id).value=settings.page[key];}
+function updateField(key,value){if(!selected||settings.fields[selected][key]===value)return;snapshot();settings.fields[selected][key]=value;renderFields();syncEditor();schedulePreview();}
+function schedulePreview(){clearTimeout(renderTimer);renderTimer=setTimeout(renderPreview,100);}
+function declarations(s,f){const display=!s.visible?'none':s.display==='inline'?'inline':f.container&&!f.hasText?'flex':'block';return 'display:'+display+';'+(display==='flex'?'flex-direction:column;':'')+'color:'+(s.color||'inherit')+';font-family:'+(s.font==='inherit'?'inherit':s.font==='monospace'?'monospace':'"'+s.font+'",sans-serif')+';'+(s.size?'font-size:'+s.size+'px;':'font-size:inherit;')+'font-weight:'+(s.bold?'700':'inherit')+';font-style:'+(s.italic?'italic':'inherit')+';text-decoration:'+(s.underline?'underline':'none')+';text-align:'+s.align+';margin:0 0 '+s.gap+'px;order:'+s.order+';'+(s.highlight?'background:'+s.highlightColor+';':'');}
+function pageCss(selector){const p=settings.page;return selector+'{box-sizing:border-box;display:block;background:'+p.bg+';color:'+p.color+';font: '+p.size+'px/'+p.lineHeight+' Verdana,Arial,sans-serif;max-width:'+p.width+'px;margin:0 auto;padding:32px;overflow-wrap:anywhere;}';}
+function htmlCss(){let css='html{min-height:100%;background:'+settings.page.bg+'}body{margin:0}'+pageCss('.xml-document')+' .xml-node{min-width:0}.xml-record{border-bottom:1px solid '+(settings.page.theme==='dark'?'#ffffff25':'#163b3020')+';padding-bottom:24px!important;margin-bottom:28px!important}.xml-attrs{font-size:12px;opacity:.65;display:block;margin:3px 0}a{color:inherit;overflow-wrap:anywhere}.selected-node{outline:2px dashed #269d80;outline-offset:3px;cursor:pointer}';for(const f of fields)css+='[data-field="'+f.id+'"]{'+declarations(settings.fields[f.key],f)+'}';return css;}
+function previewTagCss(){return '.preview-tag{display:none;box-sizing:border-box;width:fit-content;max-width:100%;margin:10px 0 4px;padding:2px 7px;border:1px solid #c3cfd3;border-radius:4px;background:#edf2f4;color:#344952;font-family:Verdana,Arial,sans-serif;font-size:.75em;font-weight:700;font-style:normal;line-height:1.4;text-align:left;text-decoration:none;overflow-wrap:anywhere;order:-101;cursor:pointer}.preview-tags-visible .preview-tag{display:block}.preview-tags-visible .preview-tag[data-container]{display:none}.preview-tags-visible .selected-node>.preview-tag,.preview-tags-visible.preview-containers-visible .preview-tag[data-container]{display:block}.selected-node>.preview-tag{background:#d8f4e8;border-color:#269d80;color:#15563f}';}
+function safeUrl(text){try{const u=new URL(text.trim());return ['http:','https:'].includes(u.protocol)?u.href:null;}catch{return null;}}
+function renderTree(preview){const holder=document.createElement('main');holder.className='xml-document';const records=new Set(recordNodes);const visible=new Set(recordNodes.slice(page*PAGE_SIZE,(page+1)*PAGE_SIZE));function walk(el){if(preview&&records.has(el)&&!visible.has(el))return null;const f=fieldMap.get(nodeKeys.get(el));const out=document.createElement('div');out.className='xml-node'+(records.has(el)?' xml-record':'');out.dataset.field=f.id;if(preview){const tag=document.createElement('span');tag.className='preview-tag';tag.textContent='<'+el.tagName+'>';tag.title=f.path.map(p=>p.n).join(' › ');if(f.container&&!f.hasText)tag.dataset.container='true';out.append(tag);}const attrs=[...el.attributes].filter(a=>a.namespaceURI!=='http://www.w3.org/2000/xmlns/');if(attrs.length){const info=document.createElement('span');info.className='xml-attrs';info.textContent=attrs.map(a=>a.name+': '+a.value).join(' · ');out.append(info);}for(const child of el.childNodes){if(child.nodeType===1){const c=walk(child);if(c)out.append(c);}else if(child.nodeType===3||child.nodeType===4){if(!child.textContent.trim()&&!f.mixed)continue;const url=!el.children.length?safeUrl(child.textContent):null;if(url){const a=document.createElement('a');a.href=url;a.textContent=child.textContent;a.target='_blank';a.rel='noopener noreferrer';out.append(a);}else out.append(document.createTextNode(child.textContent));}}return out;}holder.append(walk(xml.documentElement));return holder;}
+function renderPreview(){if(!xml)return;const frame=$('preview');const doc=frame.contentDocument;doc.open();doc.write('<!doctype html><html lang="cs"><meta charset="utf-8"><style>'+htmlCss()+previewTagCss()+'</style><body></body></html>');doc.close();doc.body.append(renderTree(true));doc.body.addEventListener('click',e=>{e.preventDefault();const n=e.target.closest('[data-field]');if(n){const f=fields.find(f=>f.id===n.dataset.field);selectField(f.key);}});highlightSelection();$('pager').hidden=!recordNodes.length;$('pageInfo').textContent=(page*PAGE_SIZE+1)+'–'+Math.min((page+1)*PAGE_SIZE,recordNodes.length)+' z '+recordNodes.length+' · export obsahuje vše';$('prev').disabled=page===0;$('next').disabled=(page+1)*PAGE_SIZE>=recordNodes.length;}
+function highlightSelection(){const doc=$('preview').contentDocument;if(!doc||!doc.body)return;doc.body.classList.toggle('preview-tags-visible',$('previewTags').checked);doc.body.classList.toggle('preview-containers-visible',$('showContainers').checked);doc.querySelectorAll('.selected-node').forEach(e=>e.classList.remove('selected-node'));const f=fieldMap.get(selected);if(f)doc.querySelectorAll('[data-field="'+f.id+'"]').forEach(e=>e.classList.add('selected-node'));}
+function encodeSettings(){return btoa(Array.from(new TextEncoder().encode(JSON.stringify(settings)),b=>String.fromCharCode(b)).join(''));}
+function exportCss(){
+  const uris=[...new Set(fields.flatMap(f=>f.path.map(p=>p.u)).filter(Boolean))];
+  const ns=new Map(uris.map((u,i)=>[u,'ns'+i]));
+  const singleNamespace=uris.length===1;
+  const quote=s=>'"'+s.replace(/\\/g,'\\\\').replace(/"/g,'\\"').replace(/\n/g,'\\a ')+'"';
+  const selector=f=>f.path.map(p=>p.u?(singleNamespace?'':ns.get(p.u)+'|')+CSS.escape(p.n):(uris.length?'|':'')+CSS.escape(p.n)).join(' > ');
+  const formatRule=(selector,body)=>{
+    const props=new Map();
+    for(const part of body.split(';')){
+      const colon=part.indexOf(':');if(colon<0)continue;
+      const name=part.slice(0,colon).trim(),value=part.slice(colon+1).trim();
+      props.delete(name);props.set(name,value);
+    }
+    return selector+' {\n'+[...props].map(([name,value])=>'  '+name+': '+value+';').join('\n')+'\n}\n';
+  };
+  let css='/*\n * VZHLED XML — vytvořeno ve Čtečce XML\n *\n * Tento soubor můžete ručně upravovat v textovém editoru.\n * Barvy: např. #262626, #ffffff nebo lime. Velikosti: např. 20px.\n * display: none položku skryje; inherit přebírá hodnotu od rodiče.\n * Znak > v selektoru znamená přímého potomka daného tagu.\n *\n * Uložte jako vzhled.css vedle XML a za deklaraci XML vložte:\n * <?xml-stylesheet type="text/css" href="vzhled.css"?>\n */\n\n';
+  if(uris.length){
+    css+='/* Jmenné prostory XML — ponechte před všemi pravidly. */\n';
+    for(const [uri,prefix] of ns)css+='@namespace '+(singleNamespace?'':prefix+' ')+quote(uri)+';\n';
+    css+='\n';
+  }
+  const root=fields[0];
+  const recordKey=recordNodes.length?nodeKeys.get(recordNodes[0]):null;
+  for(const f of fields){
+    let body=declarations(settings.fields[f.key],f);
+    if(f===root){
+      css+='/* ==================================================\n * NASTAVENÍ STRÁNKY\n * Kořenový tag <'+f.name+'> zde plní úlohu html/body.\n * ================================================== */\n';
+      const base=pageCss(selector(f));
+      body=base.slice(base.indexOf('{')+1,-1)+body
+        .replace('color:inherit;','color:'+settings.page.color+';')
+        .replace('font-family:inherit;','font-family:Verdana,Arial,sans-serif;')
+        .replace('font-size:inherit;','font-size:'+settings.page.size+'px;')
+        .replace('margin:0 0 '+settings.fields[f.key].gap+'px;','margin:0 auto;');
+    }else{
+      css+='/* '+shortName(f)+' — <'+f.name+'>\n * Cesta: '+f.path.map(p=>p.n).join(' > ')+'\n */\n';
+    }
+    if(f.key===recordKey)body+='padding-bottom:24px;margin-bottom:28px;border-bottom:1px solid #8885;';
+    css+=formatRule(selector(f),body)+'\n';
+  }
+  css+='/* ==================================================\n * DATA PRO OPĚTOVNÉ NAČTENÍ VE ČTEČCE\n * Prohlížeč tento komentář ignoruje. Neupravujte jej.\n * „Načíst vzhled“ obnovuje uložené ovládací prvky z těchto dat;\n * pozdější ruční změny CSS do ovládacích prvků nepřenáší.\n * Při přímém otevření XML se ruční úpravy CSS samozřejmě použijí.\n * ================================================== */\n';
+  css+='/* ctecka-xml-settings:\n'+encodeSettings().match(/.{1,100}/g).join('\n')+'\n */\n';
+  return css;
+}
+function download(text,type,name){const url=URL.createObjectURL(new Blob([text],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),10000);}
+function validateSettings(raw){if(raw.version!==1||!raw.page||!raw.fields)throw Error('Tento soubor neobsahuje nastavení naší čtečky.');const hex=v=>typeof v==='string'&&/^#[0-9a-f]{6}$/i.test(v);const num=(v,min,max)=>typeof v==='number'&&Number.isFinite(v)&&v>=min&&v<=max;const p=raw.page;if(!hex(p.bg)||!hex(p.color)||!num(p.size,10,72)||!num(p.width,280,2000)||!num(p.lineHeight,1,3)||!['light','dark'].includes(p.theme))throw Error('Nastavení stránky není platné.');for(const s of Object.values(raw.fields)){if(!s||!(s.color===null||hex(s.color))||!hex(s.highlightColor)||!['inherit','Verdana','Arial','Georgia','Tahoma','monospace'].includes(s.font)||!['block','inline'].includes(s.display)||!['inherit','left','center','right'].includes(s.align)||!num(s.size,0,100)||!num(s.gap,0,150)||!num(s.order,-100,100)||['visible','bold','italic','underline','highlight'].some(k=>typeof s[k]!=='boolean'))throw Error('Nastavení některé položky není platné.');}return raw;}
+$('openXml').onclick=$('emptyOpen').onclick=()=>$('xmlFile').click();$('xmlFile').onchange=async e=>{await readFile(e.target.files[0]);e.target.value='';};$('search').oninput=()=>{if(xml)renderFields();};$('showContainers').onchange=()=>{if(xml){renderFields();highlightSelection();}};$('previewTags').onchange=highlightSelection;
+for(const id of ['visible','highlight'])$(id).onchange=e=>updateField(id,e.target.checked);
+for(const id of ['font','display','align','color','highlightColor'])$(id).onchange=e=>updateField(id,e.target.value);
+for(const id of ['size','gap','order'])$(id).onchange=e=>{if(!e.target.checkValidity()||e.target.value===''){syncEditor();return;}updateField(id,Number(e.target.value));};
+for(const id of ['bold','italic','underline'])$(id).onclick=()=>{if(selected)updateField(id,!settings.fields[selected][id]);};$('inheritColor').onclick=()=>updateField('color',null);
+for(const [id,key] of Object.entries({pageBg:'bg',pageColor:'color',pageSize:'size',pageWidth:'width',lineHeight:'lineHeight'}))$(id).onchange=e=>{if(!settings)return;if(!e.target.checkValidity()||e.target.value===''){syncPage();return;}snapshot();settings.page[key]=e.target.type==='number'?Number(e.target.value):e.target.value;schedulePreview();};
+$('theme').onchange=e=>{if(!settings)return;snapshot();const dark=e.target.value==='dark';settings.page.theme=e.target.value;settings.page.bg=dark?'#262626':'#ffffff';settings.page.color=dark?'#ffffff':'#253b43';for(const f of fields){const s=settings.fields[f.key];if(s.color==='#146b56'||s.color==='#ffcc00')s.color=dark?'#ffcc00':'#146b56';if(/^(url|link)$/i.test(f.name))s.color=dark?'#66ccff':'#176d9e';}syncPage();syncEditor();renderPreview();};
+$('undo').onclick=()=>{if(!history.length)return;settings=JSON.parse(history.pop());$('undo').disabled=!history.length;syncPage();renderFields();syncEditor();renderPreview();};$('reset').onclick=()=>{snapshot();settings=JSON.parse(initial);syncPage();renderFields();syncEditor();renderPreview();};
+$('saveCss').onclick=()=>{download(exportCss(),'text/css;charset=utf-8','vzhled.css');tell('CSS je připravené. Postup propojení s XML najdete pod tlačítkem „Jak to funguje“.');};
+$('saveHtml').onclick=async()=>{const b=$('saveHtml');b.disabled=true;b.textContent='Připravuji…';await new Promise(r=>setTimeout(r,30));try{const html='<!doctype html><html lang="cs"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+escapeHtml(fileName)+'</title><style>'+htmlCss()+'</style><body>'+renderTree(false).outerHTML+'</body></html>';download(html,'text/html;charset=utf-8',fileName.replace(/\.xml$/i,'')+'.html');tell('HTML obsahuje celý dokument včetně vzhledu.');}finally{b.disabled=false;b.textContent='Stáhnout HTML';}};
+$('openSettings').onclick=()=>{if(!xml){tell('Nejdřív načtěte XML, potom jeho uložený vzhled.');return;}$('settingsFile').click();};$('settingsFile').onchange=async e=>{try{const file=e.target.files[0];if(!file)return;if(file.size>5000000)throw Error('Soubor se vzhledem je příliš velký.');const txt=await file.text();const match=txt.match(/\/\* ctecka-xml-settings:([A-Za-z0-9+/=\s]+) \*\//);if(!match)throw Error('Načíst lze CSS uložené touto čtečkou. Běžné CSS zatím automaticky nepřevádíme.');const raw=validateSettings(JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(match[1].replace(/\s/g,'')),c=>c.charCodeAt(0)))));let count=0;snapshot();settings.page={...raw.page};for(const f of fields)if(Object.hasOwn(raw.fields,f.key)){settings.fields[f.key]={...raw.fields[f.key]};count++;}syncPage();renderFields();syncEditor();renderPreview();tell('Vzhled načten: nastavení odpovídá '+count+' z '+fields.length+' cest tagů.');}catch(err){tell(err.message);}e.target.value='';};
+$('prev').onclick=()=>{page--;renderPreview();};$('next').onclick=()=>{page++;renderPreview();};$('help').onclick=()=>$('helpDialog').showModal();$('closeHelp').onclick=()=>$('helpDialog').close();
+let dragDepth=0;window.addEventListener('dragenter',e=>{if(e.dataTransfer.types.includes('Files')){e.preventDefault();dragDepth++;$('dropOverlay').hidden=false;}});window.addEventListener('dragover',e=>e.preventDefault());window.addEventListener('dragleave',()=>{dragDepth--;if(dragDepth<=0)$('dropOverlay').hidden=true;});window.addEventListener('drop',e=>{e.preventDefault();dragDepth=0;$('dropOverlay').hidden=true;readFile(e.dataTransfer.files[0]);});
+$('demo').onclick=()=>loadXml('<?xml version="1.0" encoding="UTF-8"?><SHOP><SHOPITEM><PRODUCTNAME>Keramický hrnek · lesní zelená</PRODUCTNAME><DESCRIPTION>Ručně glazovaný hrnek na pomalá rána. Objem 350 ml, vhodný do myčky.</DESCRIPTION><PRICE_VAT>249 Kč</PRICE_VAT><CATEGORYTEXT>Domov / Kuchyně / Hrnky</CATEGORYTEXT><EAN>8590000000011</EAN><DELIVERY_DATE>Skladem · odeslání do 2 dnů</DELIVERY_DATE><URL>https://example.com/hrnek</URL></SHOPITEM><SHOPITEM><PRODUCTNAME>Lněná utěrka · přírodní</PRODUCTNAME><DESCRIPTION>Měkký evropský len, který s každým praním získává na kráse. Rozměry 50 × 70 cm.</DESCRIPTION><PRICE_VAT>189 Kč</PRICE_VAT><CATEGORYTEXT>Domov / Kuchyně / Textil</CATEGORYTEXT><EAN>8590000000028</EAN><DELIVERY_DATE>Skladem · odeslání do 2 dnů</DELIVERY_DATE></SHOPITEM><SHOPITEM><PRODUCTNAME>Dřevěné prkénko · dub</PRODUCTNAME><DESCRIPTION>Masivní dubové dřevo ošetřené přírodním olejem. Každý kus má jedinečnou kresbu.</DESCRIPTION><PRICE_VAT>590 Kč</PRICE_VAT><CATEGORYTEXT>Domov / Kuchyně / Prkénka</CATEGORYTEXT><EAN>8590000000035</EAN><DELIVERY_DATE>Na objednávku · 7 dnů</DELIVERY_DATE></SHOPITEM></SHOP>','ukazka-zbozi.xml');
+</script>
+</html>
